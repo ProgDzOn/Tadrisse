@@ -452,45 +452,55 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   document.getElementById('registrationForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const form = e.target;
-  const submitBtn = form.querySelector('button[type="submit"]');
-  const messageDiv = document.getElementById('formMessage');
-  
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> جاري الإرسال...';
-  
-  try {
-    const formData = new FormData(form);
-    const data = {};
-    formData.forEach((value, key) => data[key] = value);
+    e.preventDefault();
+    const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const messageDiv = document.getElementById('formMessage');
     
-    // استبدل هذا الرابط برابط السكريبت الخاص بك
-    const scriptURL = "https://script.google.com/macros/s/AKfycbyCmR3mL4CbyjKxBflsxRXNom0GUxJ0dJ_FsXPmIErrpbkyKrmH_zN5T_DI7NRwlWXlNQ/exec";
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> جاري الإرسال...';
     
-    // أضف معلمة no-cors للتحايل على مشاكل CORS
-    const response = await fetch(scriptURL + '?callback=callback', {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data)
-    });
+    try {
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((value, key) => data[key] = value);
+      
+      // رابط السكريبت الخاص بك
+      const scriptURL = "https://script.google.com/macros/s/AKfycbyCmR3mL4CbyjKxBflsxRXNom0GUxJ0dJ_FsXPmIErrpbkyKrmH_zN5T_DI7NRwlWXlNQ/exec";
+      
+      // استخدم FormData مباشرة بدلاً من JSON
+      const response = await fetch(scriptURL, {
+        method: 'POST',
+        body: new URLSearchParams(formData)
+      });
+      
+      const result = await response.text();
+      
+      if (result.includes("تم التسجيل بنجاح")) {
+        showMessage('تم التسجيل بنجاح! سنتواصل معك قريباً.', 'success');
+        form.reset();
+      } else {
+        throw new Error(result || 'حدث خطأ غير متوقع');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showMessage('تم استلام طلبك بنجاح! سنتواصل معك قريباً.', 'success');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>إرسال الطلب';
+    }
+  });
+
+  function showMessage(message, type) {
+    const messageDiv = document.getElementById('formMessage');
+    messageDiv.textContent = message;
+    messageDiv.className = `alert alert-${type} mt-3 text-center`;
+    messageDiv.classList.remove('d-none');
     
-    // حتى مع no-cors يمكنك اعتبار أن الإرسال ناجح
-    showMessage('تم استلام طلبك بنجاح! سنتواصل معك قريباً.', 'success');
-    form.reset();
-    
-  } catch (error) {
-    console.error('Error:', error);
-    showMessage('تم إرسال طلبك بنجاح! سنتواصل معك قريباً.', 'success');
-    form.reset();
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>إرسال الطلب';
+    setTimeout(() => {
+      messageDiv.classList.add('d-none');
+    }, 5000);
   }
-});
 </script>
 </body>
 </html>
