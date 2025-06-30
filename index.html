@@ -462,29 +462,26 @@
     
     try {
       const formData = new FormData(form);
-      const data = {};
-      formData.forEach((value, key) => data[key] = value);
+      const params = new URLSearchParams(formData);
       
-      // رابط السكريبت الخاص بك
       const scriptURL = "https://script.google.com/macros/s/AKfycbyCmR3mL4CbyjKxBflsxRXNom0GUxJ0dJ_FsXPmIErrpbkyKrmH_zN5T_DI7NRwlWXlNQ/exec";
       
-      // استخدم FormData مباشرة بدلاً من JSON
       const response = await fetch(scriptURL, {
         method: 'POST',
-        body: new URLSearchParams(formData)
+        body: params
       });
       
-      const result = await response.text();
+      const result = await response.json();
       
-      if (result.includes("تم التسجيل بنجاح")) {
-        showMessage('تم التسجيل بنجاح! سنتواصل معك قريباً.', 'success');
+      if (result.status === "success") {
+        showMessage(`تم التسجيل بنجاح! رقم تسجيلك: ${result.registrationNumber}`, 'success');
         form.reset();
       } else {
-        throw new Error(result || 'حدث خطأ غير متوقع');
+        throw new Error(result.message || 'حدث خطأ غير متوقع');
       }
     } catch (error) {
       console.error('Error:', error);
-      showMessage('تم استلام طلبك بنجاح! سنتواصل معك قريباً.', 'success');
+      showMessage('حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى.', 'danger');
     } finally {
       submitBtn.disabled = false;
       submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>إرسال الطلب';
