@@ -449,93 +449,65 @@
   </div>
 </footer>
 
-  <script>
-    document.getElementById('registrationForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const form = e.target;
-  const submitBtn = form.querySelector('button[type="submit"]');
-  const messageDiv = document.getElementById('formMessage');
-  
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> جاري الإرسال...';
-  
-  try {
-    // تحضير البيانات
-    const formData = new FormData(form);
-    const data = {};
-    formData.forEach((value, key) => data[key] = value);
-    
-    // عنوان السكريبت - تأكد من استبداله برابطك
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzkRSHVdb8onNwtIWsUChD4z-wdkuNSsmrml6GIY8zPz8A-5CQK004TOAILsjloWguX/exec";
-    
-    // إرسال البيانات
-    const response = await fetch(scriptURL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-      },
-      body: new URLSearchParams(data).toString()
-    });
-    
-    // معالجة الرد
-    if (!response.ok) {
-      throw new Error(`خطأ في الشبكة: ${response.status}`);
+<script>
+  document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const messageDiv = document.getElementById('formMessage');
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> جاري الإرسال...';
+
+    try {
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((value, key) => data[key] = value);
+
+      // ✅ استبدل بالرابط الصحيح للنشر
+      const scriptURL = "https://script.google.com/macros/s/AKfycbxTfCIXzYDaNh7XrGV-BA4GjzWXnckbgilhknSaAP_OdX7r8nHs2QWCxt1pcUUznV09jw/exec";
+
+      const response = await fetch(scriptURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (!response.ok) {
+        throw new Error('فشل الاتصال بالخادم. الكود: ' + response.status);
+      }
+
+      const result = await response.json();
+
+      if (result.status === "success") {
+        showMessage(`✅ تم التسجيل بنجاح! رقم التسجيل: ${result.registrationNumber}`, 'success');
+        form.reset();
+      } else {
+        throw new Error(result.message || '⚠️ حدث خطأ أثناء المعالجة');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showMessage(`❌ ${error.message}`, 'danger');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> إرسال الطلب';
     }
-    
-    const result = await response.json();
-    
-    if (result.result === "success") {
-      showMessage(`تم التسجيل بنجاح! رقم تسجيلك: ${result.registrationNumber}`, 'success');
-      form.reset();
-    } else {
-      throw new Error(result.message || 'حدث خطأ غير متوقع من الخادم');
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    showMessage(`حدث خطأ أثناء الإرسال: ${error.message}`, 'danger');
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>إرسال الطلب';
+  });
+
+  function showMessage(message, type) {
+    const messageDiv = document.getElementById('formMessage');
+    messageDiv.textContent = message;
+    messageDiv.className = `alert alert-${type} mt-3 text-center`;
+    messageDiv.classList.remove('d-none');
+
+    setTimeout(() => {
+      messageDiv.classList.add('d-none');
+    }, 7000);
   }
-});
+</script>
 
-function showMessage(message, type) {
-  const messageDiv = document.getElementById('formMessage');
-  messageDiv.textContent = message;
-  messageDiv.className = `alert alert-${type} mt-3 text-center`;
-  messageDiv.classList.remove('d-none');
-  
-  setTimeout(() => {
-    messageDiv.classList.add('d-none');
-  }, 10000);
-}
-
-
-    const xhr = new XMLHttpRequest();
-xhr.open('POST', scriptURL);
-xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-xhr.onload = function() {
-  if (xhr.status === 200) {
-    const result = JSON.parse(xhr.responseText);
-    if (result.result === "success") {
-      showMessage(`تم التسجيل بنجاح! رقم تسجيلك: ${result.registrationNumber}`, 'success');
-      form.reset();
-    } else {
-      showMessage(result.message || 'حدث خطأ غير متوقع', 'danger');
-    }
-  } else {
-    showMessage('حدث خطأ في الخادم', 'danger');
-  }
-  submitBtn.disabled = false;
-  submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>إرسال الطلب';
-};
-xhr.onerror = function() {
-  showMessage('فشل الاتصال بالخادم', 'danger');
-  submitBtn.disabled = false;
-  submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>إرسال الطلب';
-};
-xhr.send(new URLSearchParams(data).toString());
-  </script>
     
 </body>
 </html>
