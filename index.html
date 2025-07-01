@@ -1177,96 +1177,45 @@
 </footer>
 
 <script>
-<script>
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbxI8yc58XtzN1pqbKYUI9cf7Ae2Ry1dyyDkEtPGfJ-pLsXXPXl9Y0mwKjUN3dEsOylH5A/exec';
+
   document.getElementById('registrationForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const form = e.target;
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const messageDiv = document.getElementById('formMessage');
+    const formData = new FormData(form);
+    const data = {};
 
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> جاري الإرسال...';
+    formData.forEach((value, key) => data[key] = value);
 
     try {
-      const formData = new FormData(form);
-      const data = {};
-      formData.forEach((value, key) => data[key] = value);
-
-      // ✅ استبدل بالرابط الصحيح للنشر
-      const scriptURL = "تعذر العثور على دالة النص البرمجي: doGethttps://script.google.com/macros/s/AKfycbziQsXPJf8ZPYVCB2kFZ9Nd2TdYanuZI7E3Go-QR3iLv8dLH78fBI1WC6jFdPD4EYg6nQ/exec";
-
       const response = await fetch(scriptURL, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
       });
 
-      if (!response.ok) {
-        throw new Error('فشل الاتصال بالخادم. الكود: ' + response.status);
-      }
-
       const result = await response.json();
+      const messageDiv = document.getElementById('formMessage');
 
-      if (result.status === "success") {
-        showMessage(`✅ تم التسجيل بنجاح! رقم التسجيل: ${result.registrationNumber}`, 'success');
+      if (result.status === 'success') {
+        messageDiv.style.display = 'block';
+        messageDiv.className = 'success';
+        messageDiv.innerText = `✅ تم التسجيل بنجاح! رقم تسجيلك: ${result.registrationNumber}`;
         form.reset();
       } else {
-        throw new Error(result.message || '⚠️ حدث خطأ أثناء المعالجة');
+        messageDiv.style.display = 'block';
+        messageDiv.className = 'error';
+        messageDiv.innerText = `❌ فشل التسجيل: ${result.message}`;
       }
     } catch (error) {
-      console.error('Error:', error);
-      showMessage(`❌ ${error.message}`, 'danger');
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> إرسال الطلب';
+      const messageDiv = document.getElementById('formMessage');
+      messageDiv.style.display = 'block';
+      messageDiv.className = 'error';
+      messageDiv.innerText = `❌ حدث خطأ أثناء الإرسال: ${error.message}`;
     }
   });
-
-  function showMessage(message, type) {
-    const messageDiv = document.getElementById('formMessage');
-    messageDiv.textContent = message;
-    messageDiv.className = `alert alert-${type} mt-3 text-center`;
-    messageDiv.classList.remove('d-none');
-
-    setTimeout(() => {
-      messageDiv.classList.add('d-none');
-    }, 7000);
-  }
-</script>
-
-</script>
-</body>
-</html>";
-
-      const response = await fetch(scriptURL, {
-        method: 'POST',
-        body: formData
-      });
-
-      showMessage('✅ تم إرسال البيانات بنجاح!', 'success');
-      form.reset();
-
-    } catch (error) {
-      console.error('Error:', error);
-      showMessage(`❌ حدث خطأ أثناء الإرسال: ${error.message}`, 'danger');
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> إرسال الطلب';
-    }
-  });
-
-  function showMessage(message, type) {
-    const messageDiv = document.getElementById('formMessage');
-    messageDiv.textContent = message;
-    messageDiv.className = `alert alert-${type} mt-3 text-center`;
-    messageDiv.classList.remove('d-none');
-
-    setTimeout(() => {
-      messageDiv.classList.add('d-none');
-    }, 5000);
-  }
 </script>
 
 
