@@ -470,9 +470,9 @@ document.getElementById('registrationForm').addEventListener('submit', async fun
     const response = await fetch(scriptURL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: JSON.stringify(object)
+      body: new URLSearchParams(object).toString()
     });
     
     const result = await response.json();
