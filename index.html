@@ -509,6 +509,32 @@ function showMessage(message, type) {
     messageDiv.classList.add('d-none');
   }, 10000);
 }
+
+
+    const xhr = new XMLHttpRequest();
+xhr.open('POST', scriptURL);
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+xhr.onload = function() {
+  if (xhr.status === 200) {
+    const result = JSON.parse(xhr.responseText);
+    if (result.result === "success") {
+      showMessage(`تم التسجيل بنجاح! رقم تسجيلك: ${result.registrationNumber}`, 'success');
+      form.reset();
+    } else {
+      showMessage(result.message || 'حدث خطأ غير متوقع', 'danger');
+    }
+  } else {
+    showMessage('حدث خطأ في الخادم', 'danger');
+  }
+  submitBtn.disabled = false;
+  submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>إرسال الطلب';
+};
+xhr.onerror = function() {
+  showMessage('فشل الاتصال بالخادم', 'danger');
+  submitBtn.disabled = false;
+  submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>إرسال الطلب';
+};
+xhr.send(new URLSearchParams(data).toString());
   </script>
     
 </body>
