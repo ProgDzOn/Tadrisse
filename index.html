@@ -455,41 +455,27 @@
     const form = e.target;
     const submitBtn = form.querySelector('button[type="submit"]');
     const messageDiv = document.getElementById('formMessage');
-
+    
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> جاري الإرسال...';
 
     try {
       const formData = new FormData(form);
-      const data = {};
-      formData.forEach((value, key) => data[key] = value);
 
-      // ✅ استبدل بالرابط الصحيح للنشر
+      // ✅ استخدم FormData مباشرة بدون تحويل إلى JSON
       const scriptURL = "https://script.google.com/macros/s/AKfycbxTfCIXzYDaNh7XrGV-BA4GjzWXnckbgilhknSaAP_OdX7r8nHs2QWCxt1pcUUznV09jw/exec";
 
       const response = await fetch(scriptURL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
+        body: formData
       });
 
-      if (!response.ok) {
-        throw new Error('فشل الاتصال بالخادم. الكود: ' + response.status);
-      }
+      showMessage('✅ تم إرسال البيانات بنجاح!', 'success');
+      form.reset();
 
-      const result = await response.json();
-
-      if (result.status === "success") {
-        showMessage(`✅ تم التسجيل بنجاح! رقم التسجيل: ${result.registrationNumber}`, 'success');
-        form.reset();
-      } else {
-        throw new Error(result.message || '⚠️ حدث خطأ أثناء المعالجة');
-      }
     } catch (error) {
       console.error('Error:', error);
-      showMessage(`❌ ${error.message}`, 'danger');
+      showMessage(`❌ حدث خطأ أثناء الإرسال: ${error.message}`, 'danger');
     } finally {
       submitBtn.disabled = false;
       submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> إرسال الطلب';
@@ -504,9 +490,10 @@
 
     setTimeout(() => {
       messageDiv.classList.add('d-none');
-    }, 7000);
+    }, 5000);
   }
 </script>
+
 
     
 </body>
