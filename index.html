@@ -60,46 +60,35 @@
   </form>
 </div>
 
+
 <script>
   const scriptURL = 'https://script.google.com/macros/s/AKfycbxI8yc58XtzN1pqbKYUI9cf7Ae2Ry1dyyDkEtPGfJ-pLsXXPXl9Y0mwKjUN3dEsOylH5A/exec';
 
-  document.getElementById('registrationForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const form = e.target;
-    const formData = new FormData(form);
-    const data = {};
+document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const form = e.target;
+  const formData = new FormData(form);
 
-    formData.forEach((value, key) => data[key] = value);
+  const messageDiv = document.getElementById('formMessage');
+  messageDiv.style.display = 'none'; // إخفاء الرسالة قبل الإرسال
 
-    try {
-      const response = await fetch(scriptURL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
+  try {
+    const response = await fetch(scriptURL, {
+      method: 'POST',
+      body: formData
+    });
 
-      const result = await response.json();
-      const messageDiv = document.getElementById('formMessage');
-
-      if (result.status === 'success') {
-        messageDiv.style.display = 'block';
-        messageDiv.className = 'success';
-        messageDiv.innerText = `✅ تم التسجيل بنجاح! رقم تسجيلك: ${result.registrationNumber}`;
-        form.reset();
-      } else {
-        messageDiv.style.display = 'block';
-        messageDiv.className = 'error';
-        messageDiv.innerText = `❌ فشل التسجيل: ${result.message}`;
-      }
-    } catch (error) {
-      const messageDiv = document.getElementById('formMessage');
-      messageDiv.style.display = 'block';
-      messageDiv.className = 'error';
-      messageDiv.innerText = `❌ حدث خطأ أثناء الإرسال: ${error.message}`;
-    }
-  });
+    const text = await response.text();
+    messageDiv.style.display = 'block';
+    messageDiv.className = 'success';
+    messageDiv.innerText = '✅ تم التسجيل بنجاح!';
+    form.reset();
+  } catch (error) {
+    messageDiv.style.display = 'block';
+    messageDiv.className = 'error';
+    messageDiv.innerText = `❌ حدث خطأ أثناء الإرسال: ${error.message}`;
+  }
+});
 </script>
 
 </body>
