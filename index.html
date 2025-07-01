@@ -4,92 +4,291 @@
   <meta charset="UTF-8">
   <title>نموذج التسجيل - أكاديمية التميز</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Google Fonts: Cairo & Roboto for elegance -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Cairo', sans-serif; background-color: #f7f7f7; padding: 30px; }
-    .form-container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-    label { font-weight: bold; margin-top: 10px; display: block; }
-    input, select, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
-    button { background-color: #3498db; color: white; font-weight: bold; margin-top: 15px; cursor: pointer; }
-    .success, .error { margin-top: 15px; padding: 10px; border-radius: 5px; text-align: center; }
-    .success { background-color: #d4edda; color: #155724; }
-    .error { background-color: #f8d7da; color: #721c24; }
+    :root {
+      --primary: #2563eb;
+      --primary-light: #3b82f6;
+      --background: #f3f6fb;
+      --card-bg: #fff;
+      --input-bg: #f8fafc;
+      --border: #e5e7eb;
+      --radius: 18px;
+      --shadow: 0 6px 32px rgba(37, 99, 235, 0.08), 0 1.5px 8px rgba(0,0,0,0.04);
+      --transition: .25s cubic-bezier(.4,0,.2,1);
+      --error: #f87171;
+      --success: #34d399;
+      --text-main: #22223b;
+      --text-muted: #6b7280;
+    }
+
+    body {
+      font-family: 'Cairo', 'Roboto', sans-serif;
+      background: var(--background);
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .form-wrapper {
+      width: 100%;
+      max-width: 450px;
+      margin: 30px 0;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 36px 30px 28px 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow var(--transition);
+    }
+    .form-wrapper:hover {
+      box-shadow: 0 10px 40px rgba(37, 99, 235, 0.16);
+    }
+    .form-title {
+      font-weight: 700;
+      font-size: 2.1rem;
+      color: var(--primary);
+      margin-bottom: 12px;
+      letter-spacing: .5px;
+    }
+    .form-desc {
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      font-size: 1rem;
+      text-align: center;
+    }
+    form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+    label {
+      font-size: 1.08rem;
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: var(--text-main);
+      letter-spacing: .01em;
+      margin-top: 6px;
+    }
+    input, select {
+      background: var(--input-bg);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      font-size: 1.08rem;
+      font-family: inherit;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      margin-bottom: 6px;
+      box-sizing: border-box;
+    }
+    input:focus, select:focus {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 2px #2563eb33;
+    }
+    option:disabled {
+      color: #bbb;
+    }
+    button {
+      margin-top: 10px;
+      background: linear-gradient(90deg, var(--primary) 60%, var(--primary-light));
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.12rem;
+      padding: 13px 0;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.05);
+      transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+      letter-spacing: .5px;
+    }
+    button:hover, button:focus {
+      background: linear-gradient(90deg, var(--primary-light) 60%, var(--primary));
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.13);
+    }
+    .status-message {
+      display: none;
+      margin-top: 18px;
+      padding: 11px 15px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-align: center;
+      font-size: 1.08rem;
+      letter-spacing: .01em;
+    }
+    .status-message.success {
+      background: #e7f9ed;
+      color: var(--success);
+      border: 1px solid #bbf7d0;
+      display: block;
+      animation: bounceIn .6s;
+    }
+    .status-message.error {
+      background: #fef2f2;
+      color: var(--error);
+      border: 1px solid #fecaca;
+      display: block;
+      animation: shake .4s;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(.9); opacity: 0; }
+      70% { transform: scale(1.04); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-7px); }
+      40%, 80% { transform: translateX(7px); }
+    }
+
+    @media (max-width: 600px) {
+      .form-wrapper {
+        padding: 20px 8vw 20px 8vw;
+      }
+      .form-title {
+        font-size: 1.38rem;
+      }
+    }
+
+    /* Add floating labels for modern look */
+    .floating-label {
+      position: relative;
+      margin-bottom: 10px;
+    }
+    .floating-label input,
+    .floating-label select {
+      padding-top: 22px;
+    }
+    .floating-label label {
+      position: absolute;
+      right: 14px;
+      top: 14px;
+      background: var(--input-bg);
+      padding: 0 4px;
+      color: var(--text-muted);
+      font-size: 1rem;
+      pointer-events: none;
+      transition: all 0.18s cubic-bezier(.4,0,.2,1);
+      z-index: 2;
+    }
+    .floating-label input:focus + label,
+    .floating-label input:not(:placeholder-shown) + label,
+    .floating-label select:focus + label,
+    .floating-label select:not([value=""]) + label {
+      top: 4px;
+      font-size: .92rem;
+      color: var(--primary);
+      background: #fff;
+      padding: 0 7px;
+      right: 8px;
+    }
+    /* Remove default select arrow for a more custom look */
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+      background-repeat: no-repeat;
+      background-position: left 18px center;
+      background-size: 16px 16px;
+    }
   </style>
 </head>
 <body>
+  <div class="form-wrapper">
+    <div class="form-title">نموذج التسجيل</div>
+    <div class="form-desc">يرجى تعبئة جميع الحقول المطلوبة بدقة لإتمام التسجيل.</div>
+    <form id="registrationForm" autocomplete="off" novalidate>
+      <div class="floating-label">
+        <input type="text" name="name" id="name" placeholder=" " required autocomplete="off">
+        <label for="name">الاسم الكامل</label>
+      </div>
+      <div class="floating-label">
+        <input type="email" name="email" id="email" placeholder=" " required autocomplete="off">
+        <label for="email">البريد الإلكتروني</label>
+      </div>
+      <div class="floating-label">
+        <input type="tel" name="phone" id="phone" placeholder=" " required autocomplete="off">
+        <label for="phone">رقم الهاتف</label>
+      </div>
+      <div class="floating-label">
+        <select name="level" id="level" required>
+          <option value="" disabled selected hidden></option>
+          <option value="أولى متوسط">أولى متوسط</option>
+          <option value="ثاني متوسط">ثاني متوسط</option>
+          <option value="ثالث متوسط">ثالث متوسط</option>
+          <option value="رابع متوسط">رابع متوسط</option>
+        </select>
+        <label for="level">المستوى الدراسي</label>
+      </div>
+      <div class="floating-label">
+        <select name="subject" id="subject" required>
+          <option value="" disabled selected hidden></option>
+          <option value="الرياضيات">الرياضيات</option>
+          <option value="الفيزياء">الفيزياء</option>
+          <option value="العلوم الطبيعية">العلوم الطبيعية</option>
+        </select>
+        <label for="subject">المادة المطلوبة</label>
+      </div>
+      <div class="floating-label">
+        <select name="days" id="days" required>
+          <option value="" disabled selected hidden></option>
+          <option value="السبت والإثنين والأربعاء">السبت والإثنين والأربعاء</option>
+          <option value="الأحد والثلاثاء والخميس">الأحد والثلاثاء والخميس</option>
+          <option value="نهاية الأسبوع">نهاية الأسبوع</option>
+        </select>
+        <label for="days">أيام الدروس المناسبة</label>
+      </div>
+      <button type="submit">إرسال</button>
+      <div id="formMessage" class="status-message"></div>
+    </form>
+  </div>
+  <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz4ZiebUKVFKUL78RoRK_Hmg-cHNbyfbWRjKS6DIDAHVu1UR2IUEY171TKB6F1A2c6wZg/exec';
 
-<div class="form-container">
-  <h2>نموذج التسجيل</h2>
-  <form id="registrationForm">
-    <label>الاسم الكامل</label>
-    <input type="text" name="name" required>
+    document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
 
-    <label>البريد الإلكتروني</label>
-    <input type="email" name="email" required>
+      const messageDiv = document.getElementById('formMessage');
+      messageDiv.style.display = 'none'; // إخفاء الرسالة قبل الإرسال
 
-    <label>رقم الهاتف</label>
-    <input type="tel" name="phone" required>
+      try {
+        const response = await fetch(scriptURL, {
+          method: 'POST',
+          body: formData
+        });
 
-    <label>المستوى الدراسي</label>
-    <select name="level" required>
-      <option value="">-- اختر --</option>
-      <option value="أولى متوسط">أولى متوسط</option>
-      <option value="ثاني متوسط">ثاني متوسط</option>
-      <option value="ثالث متوسط">ثالث متوسط</option>
-      <option value="رابع متوسط">رابع متوسط</option>
-    </select>
-
-    <label>المادة المطلوبة</label>
-    <select name="subject" required>
-      <option value="">-- اختر --</option>
-      <option value="الرياضيات">الرياضيات</option>
-      <option value="الفيزياء">الفيزياء</option>
-      <option value="العلوم الطبيعية">العلوم الطبيعية</option>
-    </select>
-
-    <label>أيام الدروس المناسبة</label>
-    <select name="days" required>
-      <option value="">-- اختر --</option>
-      <option value="السبت والإثنين والأربعاء">السبت والإثنين والأربعاء</option>
-      <option value="الأحد والثلاثاء والخميس">الأحد والثلاثاء والخميس</option>
-      <option value="نهاية الأسبوع">نهاية الأسبوع</option>
-    </select>
-
-    <button type="submit">إرسال</button>
-
-    <div id="formMessage" class="success" style="display: none;"></div>
-  </form>
-</div>
-
-
-<script>
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbz4ZiebUKVFKUL78RoRK_Hmg-cHNbyfbWRjKS6DIDAHVu1UR2IUEY171TKB6F1A2c6wZg/exec';
-
-document.getElementById('registrationForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const form = e.target;
-  const formData = new FormData(form);
-
-  const messageDiv = document.getElementById('formMessage');
-  messageDiv.style.display = 'none'; // إخفاء الرسالة قبل الإرسال
-
-  try {
-    const response = await fetch(scriptURL, {
-      method: 'POST',
-      body: formData
+        // Google Apps Script sometimes returns HTML, sometimes text
+        const text = await response.text();
+        messageDiv.style.display = 'block';
+        messageDiv.className = 'status-message success';
+        messageDiv.innerText = '✅ تم التسجيل بنجاح!';
+        form.reset();
+      } catch (error) {
+        messageDiv.style.display = 'block';
+        messageDiv.className = 'status-message error';
+        messageDiv.innerText = `❌ حدث خطأ أثناء الإرسال: ${error.message}`;
+      }
     });
 
-    const text = await response.text();
-    messageDiv.style.display = 'block';
-    messageDiv.className = 'success';
-    messageDiv.innerText = '✅ تم التسجيل بنجاح!';
-    form.reset();
-  } catch (error) {
-    messageDiv.style.display = 'block';
-    messageDiv.className = 'error';
-    messageDiv.innerText = `❌ حدث خطأ أثناء الإرسال: ${error.message}`;
-  }
-});
-</script>
-
+    // Optional: set floating label for selects on change
+    document.querySelectorAll('select').forEach(sel => {
+      sel.addEventListener('change', function() {
+        if (sel.value !== "") sel.classList.add('selected');
+        else sel.classList.remove('selected');
+      });
+    });
+  </script>
 </body>
 </html>
